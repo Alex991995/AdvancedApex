@@ -30,6 +30,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   public DataResult switchAccount() {
     List<PrivateContactClass> privateContact = new List<PrivateContactClass>();
     List<PublicContactClass> publicContact = new List<PublicContactClass>();
+
+    List<Contact> contactsToUpdate = new List<Contact>();
     DataResult dataResult = new DataResult();
 
     for (TypeClass c : AllContacts) {
@@ -49,6 +51,9 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         privateContact[i].contactRecord.AccountId = publicContact[i]
           .contactRecord.AccountId;
         publicContact[i].contactRecord.AccountId = accountPrivateContact;
+
+        contactsToUpdate.add(privateContact[i].contactRecord);
+        contactsToUpdate.add(publicContact[i].contactRecord);
 
         dataResult.changedPrivateContact.add(privateContact[i]);
         dataResult.changedPublicContact.add(publicContact[i]);
