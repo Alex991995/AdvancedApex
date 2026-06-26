@@ -58,7 +58,7 @@ private class AccountSwitcherImpl_Test {
   }
 
   @isTest
-  private static void switchAccount_Test() {
+  private static void isAccountIdBelongedPreviousContact () {
     List<PrivateContactClass> oldPrivateContact = new List<PrivateContactClass>();
     List<PublicContactClass> oldPublicContact = new List<PublicContactClass>();
 
@@ -75,21 +75,18 @@ private class AccountSwitcherImpl_Test {
       }
     }
 
-    // System.debug(AccountSwitcherImpl.AllContacts);
-    // accountSwitcher.switchAccount();
+    for (Integer i = 0; i < dataResult.changedPrivateContact.size(); i++) {
+      Id pubAccId = oldPublicContact[i].contactRecord.AccountId;
+      Id privAccId = dataResult.changedPrivateContact[i]
+        .contactRecord.AccountId;
+      Assert.areEqual(pubAccId, privAccId, 'They should have the same Account Id');
+    }
 
-    // for (Integer i = 0; i < dataResult.changedPrivateContact.size(); i++) {
-    //   Id pubAccId = oldPublicContact[i].contactRecord.Account.Id;
-    //   Id privAccId = dataResult.changedPrivateContact[i]
-    //     .contactRecord.Account.Id;
-    //   Assert.areNotEqual(pubAccId, privAccId, 'They should have the same Account Id');
-    // }
-
-    // for (Integer i = 0; i < dataResult.changedPublicContact.size(); i++) {
-    //   Id privAccId = oldPrivateContact[i].contactRecord.Account.Id;
-    //   Id pubAccId = dataResult.changedPublicContact[i]
-    //     .contactRecord.Account.Id;
-    //   Assert.areEqual(pubAccId, privAccId, 'They should have the same Account Id');
-    // }
+    for (Integer i = 0; i < dataResult.changedPublicContact.size(); i++) {
+      Id privAccId = oldPrivateContact[i].contactRecord.AccountId;
+      Id pubAccId = dataResult.changedPublicContact[i]
+        .contactRecord.AccountId;
+      Assert.areEqual(pubAccId, privAccId, 'They should have the same Account Id');
+    }
   }
 }
