@@ -2,17 +2,6 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   final integer RANDOM_NUMBER_LENGTH = 6;
   public static List<TypeClass> AllContacts = new List<TypeClass>();
 
-  PrivateContactClass PrivateContactClass;
-  PublicContactClass PublicContactClass;
-
-  public AccountSwitcherImpl(
-    PrivateContactClass privateContact,
-    PublicContactClass publicContact
-  ) {
-    this.PrivateContactClass = privateContact;
-    this.PublicContactClass = publicContact;
-  }
-
   public void getAndSort() {
     List<Contact> contacts = getALLContacts();
 
@@ -32,7 +21,12 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
       }
     }
   }
-
+  /**
+   * @description fill 3 List by data from Classes(PublicContact and PrivateContact) into DataResult like
+   * nonChangedPrivateContact
+   * changedPrivateContact
+   * changedPublicContact
+   */
   public DataResult switchAccount() {
     List<PrivateContactClass> privateContact = new List<PrivateContactClass>();
     List<PublicContactClass> publicContact = new List<PublicContactClass>();
@@ -45,6 +39,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         publicContact.add((PublicContactClass) c);
       }
     }
+    System.debug(privateContact);
+    // System.debug(publicContact);
     for (Integer i = 0; i < privateContact.size(); i++) {
       if (privateContact[i].contactType == 'Premier') {
         dataResult.nonChangedPrivateContact.add(privateContact[i]);
@@ -63,7 +59,7 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
     return dataResult;
   }
 
-  private List<Contact> getALLContacts() {
+  public List<Contact> getALLContacts() {
     return [SELECT Id, Amount__c FROM Contact];
   }
   /**
@@ -82,7 +78,7 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
    * @description Calculate identical digits. It it 3 and higher -
    * It has ContactType = Premier otherwise Person.
    */
-  private String getContactType(Integer cardNumber) {
+  public String getContactType(Integer cardNumber) {
     Boolean found = false;
     List<String> listCardNumber = String.valueOf(cardNumber).split('');
     Map<String, Integer> mapDigits = new Map<String, Integer>();
