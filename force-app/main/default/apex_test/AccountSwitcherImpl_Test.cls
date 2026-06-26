@@ -63,11 +63,9 @@ private class AccountSwitcherImpl_Test {
     List<PublicContactClass> oldPublicContact = new List<PublicContactClass>();
 
     AccountSwitcherImpl accountSwitcher = new AccountSwitcherImpl();
-    
+
     accountSwitcher.getAndSort();
-    System.debug(AccountSwitcherImpl.AllContacts);
-    // DataResult dataResult = accountSwitcher.switchAccount();
-    // ;
+    DataResult dataResult = accountSwitcher.switchAccount();
 
     for (TypeClass c : AccountSwitcherImpl.AllContacts) {
       if (c instanceof PrivateContactClass) {
@@ -76,7 +74,7 @@ private class AccountSwitcherImpl_Test {
         oldPublicContact.add((PublicContactClass) c);
       }
     }
-     System.debug(oldPrivateContact);
+
     // System.debug(AccountSwitcherImpl.AllContacts);
     // accountSwitcher.switchAccount();
 
