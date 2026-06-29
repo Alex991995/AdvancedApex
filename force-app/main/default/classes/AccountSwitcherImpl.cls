@@ -43,6 +43,10 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
       }
      
     }
+
+    // System.debug(privateContact.size());
+    // System.debug(publicContact.size());
+
     for (Integer i = 0; i < privateContact.size(); i++) {
       if (privateContact[i].contactType == 'Premier') {
         dataResult.nonChangedPrivateContact.add(privateContact[i]);
@@ -60,8 +64,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         dataResult.changedPrivateContact.add(privateContact[i]);
         dataResult.changedPublicContact.add(publicContact[i]);
       }
-      update contactsToUpdate;
     }
+    update contactsToUpdate;
     return dataResult;
   }
 

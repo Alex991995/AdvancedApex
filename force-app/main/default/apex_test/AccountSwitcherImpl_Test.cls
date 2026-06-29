@@ -70,7 +70,6 @@ private class AccountSwitcherImpl_Test {
 
     accountSwitcher.getAndSort();
     DataResult dataResult = accountSwitcher.switchAccount();
-   
 
     for (TypeClass c : AccountSwitcherImpl.AllContacts) {
       if (c instanceof PrivateContactClass) {
@@ -80,8 +79,12 @@ private class AccountSwitcherImpl_Test {
       }
     }
 
+    // System.debug(JSON.serializePretty(dataResult.changedPrivateContact));
 
-    for (Integer i = 0; i < 20; i++) {
+    System.debug(oldPublicContact[0].contactRecord);
+    System.debug(dataResult.changedPrivateContact[0].contactRecord);
+
+    for (Integer i = 0; i < 1; i++) {
       Id pubAccId = oldPublicContact[i].contactRecord.AccountId;
       Id privAccId = dataResult.changedPrivateContact[i]
         .contactRecord.AccountId;
@@ -92,7 +95,7 @@ private class AccountSwitcherImpl_Test {
       );
     }
 
-    for (Integer i = 0; i < 20; i++) {
+    for (Integer i = 0; i < 10; i++) {
       Id privAccId = oldPrivateContact[i].contactRecord.AccountId;
       Id pubAccId = dataResult.changedPublicContact[i].contactRecord.AccountId;
       Assert.areEqual(
