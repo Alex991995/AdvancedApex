@@ -6,7 +6,7 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
     List<Contact> contacts = getALLContacts();
 
     for (Contact c : contacts) {
-      if (c.Amount__c > 1000) {
+      if (c.Amount__c > 10000) {
         PrivateContactClass privateContact = new PrivateContactClass();
         privateContact.contactRecord = c;
         privateContact.cardNumber = getRandomNumber();
@@ -37,9 +37,11 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
     for (TypeClass c : AllContacts) {
       if (c instanceof PrivateContactClass) {
         privateContact.add((PrivateContactClass) c);
-      } else {
+      } 
+      else {
         publicContact.add((PublicContactClass) c);
       }
+     
     }
     for (Integer i = 0; i < privateContact.size(); i++) {
       if (privateContact[i].contactType == 'Premier') {
@@ -47,10 +49,10 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         continue;
       }
       if ((privateContact[i] != null) && (publicContact[i] != null)) {
-        Id accountPrivateContact = privateContact[i].contactRecord.AccountId;
+        Id accountPrivateId = privateContact[i].contactRecord.AccountId;
         privateContact[i].contactRecord.AccountId = publicContact[i]
           .contactRecord.AccountId;
-        publicContact[i].contactRecord.AccountId = accountPrivateContact;
+        publicContact[i].contactRecord.AccountId = accountPrivateId;
 
         contactsToUpdate.add(privateContact[i].contactRecord);
         contactsToUpdate.add(publicContact[i].contactRecord);
@@ -58,24 +60,13 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         dataResult.changedPrivateContact.add(privateContact[i]);
         dataResult.changedPublicContact.add(publicContact[i]);
       }
+      update contactsToUpdate;
     }
     return dataResult;
   }
 
   public List<Contact> getALLContacts() {
     return [SELECT Id, AccountId, Amount__c FROM Contact];
-  }
-  /**
-   * @description Generates Random Number
-   */
-  private Integer getRandomNumber() {
-    String result = '';
-    for (Integer i = 1; i <= RANDOM_NUMBER_LENGTH; i++) {
-      Integer digit = (Integer) (Math.random() * 10);
-      result += String.valueOf(digit);
-    }
-    Integer cardNumber = Integer.valueOf(result);
-    return cardNumber;
   }
   /**
    * @description Calculate identical digits. It it 3 and higher -
@@ -100,5 +91,18 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
       }
     }
     return found ? 'Premier' : 'Person';
+  }
+
+  /**
+   * @description Generates Random Number
+   */
+  private Integer getRandomNumber() {
+    String result = '';
+    for (Integer i = 1; i <= RANDOM_NUMBER_LENGTH; i++) {
+      Integer digit = (Integer) (Math.random() * 10);
+      result += String.valueOf(digit);
+    }
+    Integer cardNumber = Integer.valueOf(result);
+    return cardNumber;
   }
 }
