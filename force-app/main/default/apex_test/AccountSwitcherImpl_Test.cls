@@ -63,29 +63,28 @@ private class AccountSwitcherImpl_Test {
 
   @isTest
   private static void isAccountIdBelongedPreviousContact() {
-    List<PrivateContactClass> oldPrivateContact = new List<PrivateContactClass>();
-    List<PublicContactClass> oldPublicContact = new List<PublicContactClass>();
+    // List<PrivateContactClass> oldPrivateContact = new List<PrivateContactClass>();
+    // List<PublicContactClass> oldPublicContact = new List<PublicContactClass>();
+    List<Id> oldPrivateContactId = new List<Id>();
+    List<Id> oldPublicContactId = new List<Id>();
 
     AccountSwitcherImpl accountSwitcher = new AccountSwitcherImpl();
-
     accountSwitcher.getAndSort();
-    DataResult dataResult = accountSwitcher.switchAccount();
 
     for (TypeClass c : AccountSwitcherImpl.AllContacts) {
       if (c instanceof PrivateContactClass) {
-        oldPrivateContact.add((PrivateContactClass) c);
+        PrivateContactClass privateContact = (PrivateContactClass) c;
+        oldPrivateContactId.add(privateContact.contactRecord.AccountId);
       } else {
-        oldPublicContact.add((PublicContactClass) c);
+        PublicContactClass PublicContact = (PublicContactClass) c;
+        oldPublicContactId.add(publicContact.contactRecord.AccountId);
       }
     }
 
-    // System.debug(JSON.serializePretty(dataResult.changedPrivateContact));
+    DataResult dataResult = accountSwitcher.switchAccount();
 
-    System.debug(oldPublicContact[0].contactRecord);
-    System.debug(dataResult.changedPrivateContact[0].contactRecord);
-
-    for (Integer i = 0; i < 1; i++) {
-      Id pubAccId = oldPublicContact[i].contactRecord.AccountId;
+    for (Integer i = 0; i < 10; i++) {
+      Id pubAccId = oldPublicContactId[i];
       Id privAccId = dataResult.changedPrivateContact[i]
         .contactRecord.AccountId;
       Assert.areEqual(
@@ -96,7 +95,7 @@ private class AccountSwitcherImpl_Test {
     }
 
     for (Integer i = 0; i < 10; i++) {
-      Id privAccId = oldPrivateContact[i].contactRecord.AccountId;
+      Id privAccId = oldPrivateContactId[i];
       Id pubAccId = dataResult.changedPublicContact[i].contactRecord.AccountId;
       Assert.areEqual(
         pubAccId,
