@@ -44,9 +44,6 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
      
     }
 
-    // System.debug(privateContact.size());
-    // System.debug(publicContact.size());
-
     for (Integer i = 0; i < privateContact.size(); i++) {
       if (privateContact[i].contactType == 'Premier') {
         dataResult.nonChangedPrivateContact.add(privateContact[i]);

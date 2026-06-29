@@ -1,7 +1,7 @@
-@isTest
+@IsTest
 private class AccountSwitcherImpl_Test {
   @TestSetup
-  static void setupData() {
+  private static void setupData() {
     List<Account> accounts = TestDataFactory.createAccounts();
     insert accounts;
     List<Account> insertedAccounts = TestDataFactory.getAccounts();
@@ -10,7 +10,7 @@ private class AccountSwitcherImpl_Test {
     insert contacts;
   }
 
-  @isTest
+  @IsTest
   private static void isPrivateAmountGreaterThan1000() {
     AccountSwitcherImpl accountSwitcher = new AccountSwitcherImpl();
     accountSwitcher.getAndSort();
@@ -32,7 +32,7 @@ private class AccountSwitcherImpl_Test {
     }
   }
 
-  @isTest
+  @IsTest
   private static void checkContactTypeDependedOnCardNumber() {
     AccountSwitcherImpl accountSwitcher = new AccountSwitcherImpl();
     accountSwitcher.getAndSort();
@@ -61,7 +61,7 @@ private class AccountSwitcherImpl_Test {
     }
   }
 
-  @isTest
+  @IsTest
   private static void isAccountIdBelongedPreviousContact() {
     // List<PrivateContactClass> oldPrivateContact = new List<PrivateContactClass>();
     // List<PublicContactClass> oldPublicContact = new List<PublicContactClass>();
