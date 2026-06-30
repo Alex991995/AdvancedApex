@@ -11,5 +11,7 @@
     "other": true,
     "comments": false,
     "strings": false
-}
+  },
+  // "salesforcedx-vscode-core.push-or-deploy-on-save.enabled": true,
+  "apex.logLevel": "debug"
 }

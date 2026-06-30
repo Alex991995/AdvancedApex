@@ -1,12 +1,14 @@
 public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   final integer RANDOM_NUMBER_LENGTH = 6;
-  public static List<TypeClass> AllContacts = new List<TypeClass>();
+  private static final String TYPE_PREMIER = 'Premier';
+  private static final String TYPE_PERSON = 'Person';
+  public List<TypeClass> AllContacts = new List<TypeClass>();
 
   public void getAndSort() {
-    List<Contact> contacts = getALLContacts();
+    List<Contact> contacts = getAllContacts();
 
     for (Contact c : contacts) {
-      if (c.Amount__c > 1000) {
+      if (c.Amount__c > 10000) {
         PrivateContactClass privateContact = new PrivateContactClass();
         privateContact.contactRecord = c;
         privateContact.cardNumber = getRandomNumber();
@@ -15,8 +17,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
       } else {
         PublicContactClass publicContact = new PublicContactClass();
         publicContact.contactRecord = c;
-        publicContact.volunteerNumber = getRandomNumber();
-        publicContact.contactType = 'Person';
+        publicContact.volunteerNumber = getEvenRandomNumber();
+        publicContact.contactType = TYPE_PERSON;
         AllContacts.add(publicContact);
       }
     }
@@ -30,6 +32,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   public DataResult switchAccount() {
     List<PrivateContactClass> privateContact = new List<PrivateContactClass>();
     List<PublicContactClass> publicContact = new List<PublicContactClass>();
+
+    List<Contact> contactsToUpdate = new List<Contact>();
     DataResult dataResult = new DataResult();
 
     for (TypeClass c : AllContacts) {
@@ -39,40 +43,36 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         publicContact.add((PublicContactClass) c);
       }
     }
-    System.debug(privateContact);
-    // System.debug(publicContact);
+
     for (Integer i = 0; i < privateContact.size(); i++) {
-      if (privateContact[i].contactType == 'Premier') {
+      if (privateContact[i].contactType == TYPE_PREMIER) {
         dataResult.nonChangedPrivateContact.add(privateContact[i]);
         continue;
       }
       if ((privateContact[i] != null) && (publicContact[i] != null)) {
-        Account accountPrivateContact = privateContact[i].contactRecord.Account;
-        privateContact[i].contactRecord.Account = publicContact[i]
-          .contactRecord.Account;
-        publicContact[i].contactRecord.Account = accountPrivateContact;
+        Id accountPrivateId = privateContact[i].contactRecord.AccountId;
+        privateContact[i].contactRecord.AccountId = publicContact[i]
+          .contactRecord.AccountId;
+        publicContact[i].contactRecord.AccountId = accountPrivateId;
+
+        contactsToUpdate.add(privateContact[i].contactRecord);
+        contactsToUpdate.add(publicContact[i].contactRecord);
 
         dataResult.changedPrivateContact.add(privateContact[i]);
         dataResult.changedPublicContact.add(publicContact[i]);
       }
     }
+    try {
+      update contactsToUpdate;
+    } catch (DmlException e) {
+      System.debug('DML failed at line: ' + e.getLineNumber());
+      System.debug('Error message: ' + e.getMessage());
+    }
     return dataResult;
   }
 
-  public List<Contact> getALLContacts() {
-    return [SELECT Id, Amount__c FROM Contact];
-  }
-  /**
-   * @description Generates Random Number
-   */
-  private Integer getRandomNumber() {
-    String result = '';
-    for (Integer i = 1; i <= RANDOM_NUMBER_LENGTH; i++) {
-      Integer digit = (Integer) (Math.random() * 10);
-      result += String.valueOf(digit);
-    }
-    Integer cardNumber = Integer.valueOf(result);
-    return cardNumber;
+  public List<Contact> getAllContacts() {
+    return [SELECT Id, AccountId, Amount__c FROM Contact];
   }
   /**
    * @description Calculate identical digits. It it 3 and higher -
@@ -96,6 +96,39 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         break;
       }
     }
-    return found ? 'Premier' : 'Person';
+    return found ? TYPE_PREMIER : TYPE_PERSON;
+  }
+
+  /**
+   * @description Generates Random Number
+   */
+  private Integer getRandomNumber() {
+    String result = '';
+
+    while (result.length() < RANDOM_NUMBER_LENGTH) {
+      Integer digit = (Integer) (Math.random() * 10);
+      if (result.length() == 0 && digit == 0) {
+        continue;
+      }
+      result += String.valueOf(digit);
+    }
+    Integer cardNumber = Integer.valueOf(result);
+    return cardNumber;
+  }
+
+  private Integer getEvenRandomNumber() {
+    String result = '';
+
+    while (result.length() < RANDOM_NUMBER_LENGTH) {
+      Integer digit = (Integer) (Math.random() * 10);
+      if (result.length() == 0 && digit == 0) {
+        continue;
+      }
+      if (Math.mod(digit, 2) == 0) {
+        result += String.valueOf(digit);
+      }
+    }
+    Integer cardNumber = Integer.valueOf(result);
+    return cardNumber;
   }
 }
