@@ -1,6 +1,6 @@
 public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   final integer RANDOM_NUMBER_LENGTH = 6;
-  public static List<TypeClass> AllContacts = new List<TypeClass>();
+  public List<TypeClass> AllContacts = new List<TypeClass>();
 
   public void getAndSort() {
     List<Contact> contacts = getALLContacts();
@@ -37,11 +37,9 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
     for (TypeClass c : AllContacts) {
       if (c instanceof PrivateContactClass) {
         privateContact.add((PrivateContactClass) c);
-      } 
-      else {
+      } else {
         publicContact.add((PublicContactClass) c);
       }
-     
     }
 
     for (Integer i = 0; i < privateContact.size(); i++) {
