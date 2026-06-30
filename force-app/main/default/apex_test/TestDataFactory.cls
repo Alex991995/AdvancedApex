@@ -3,9 +3,9 @@ public class TestDataFactory {
     List<Account> accounts = new List<Account>();
 
     for (Integer i = 0; i < 50; i++) {
-      Account c = new Account();
-      c.Name = 'Account ' + i;
-      accounts.add(c);
+      Account acc = new Account();
+      acc.Name = 'Account ' + i;
+      accounts.add(acc);
     }
     return accounts;
   }

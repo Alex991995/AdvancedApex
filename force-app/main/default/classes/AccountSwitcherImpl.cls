@@ -1,9 +1,11 @@
 public with sharing class AccountSwitcherImpl implements AccountSwitcher {
   final integer RANDOM_NUMBER_LENGTH = 6;
+  private static final String TYPE_PREMIER = 'Premier';
+  private static final String TYPE_PERSON = 'Person';
   public List<TypeClass> AllContacts = new List<TypeClass>();
 
   public void getAndSort() {
-    List<Contact> contacts = getALLContacts();
+    List<Contact> contacts = getAllContacts();
 
     for (Contact c : contacts) {
       if (c.Amount__c > 10000) {
@@ -15,8 +17,8 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
       } else {
         PublicContactClass publicContact = new PublicContactClass();
         publicContact.contactRecord = c;
-        publicContact.volunteerNumber = getRandomNumber();
-        publicContact.contactType = 'Person';
+        publicContact.volunteerNumber = getEvenRandomNumber();
+        publicContact.contactType = TYPE_PERSON;
         AllContacts.add(publicContact);
       }
     }
@@ -43,7 +45,7 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
     }
 
     for (Integer i = 0; i < privateContact.size(); i++) {
-      if (privateContact[i].contactType == 'Premier') {
+      if (privateContact[i].contactType == TYPE_PREMIER) {
         dataResult.nonChangedPrivateContact.add(privateContact[i]);
         continue;
       }
@@ -60,11 +62,16 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         dataResult.changedPublicContact.add(publicContact[i]);
       }
     }
-    update contactsToUpdate;
+    try {
+      update contactsToUpdate;
+    } catch (DmlException e) {
+      System.debug('DML failed at line: ' + e.getLineNumber());
+      System.debug('Error message: ' + e.getMessage());
+    }
     return dataResult;
   }
 
-  public List<Contact> getALLContacts() {
+  public List<Contact> getAllContacts() {
     return [SELECT Id, AccountId, Amount__c FROM Contact];
   }
   /**
@@ -89,7 +96,7 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
         break;
       }
     }
-    return found ? 'Premier' : 'Person';
+    return found ? TYPE_PREMIER : TYPE_PERSON;
   }
 
   /**
@@ -97,9 +104,29 @@ public with sharing class AccountSwitcherImpl implements AccountSwitcher {
    */
   private Integer getRandomNumber() {
     String result = '';
-    for (Integer i = 1; i <= RANDOM_NUMBER_LENGTH; i++) {
+
+    while (result.length() < RANDOM_NUMBER_LENGTH) {
       Integer digit = (Integer) (Math.random() * 10);
+      if (result.length() == 0 && digit == 0) {
+        continue;
+      }
       result += String.valueOf(digit);
+    }
+    Integer cardNumber = Integer.valueOf(result);
+    return cardNumber;
+  }
+
+  private Integer getEvenRandomNumber() {
+    String result = '';
+
+    while (result.length() < RANDOM_NUMBER_LENGTH) {
+      Integer digit = (Integer) (Math.random() * 10);
+      if (result.length() == 0 && digit == 0) {
+        continue;
+      }
+      if (Math.mod(digit, 2) == 0) {
+        result += String.valueOf(digit);
+      }
     }
     Integer cardNumber = Integer.valueOf(result);
     return cardNumber;
